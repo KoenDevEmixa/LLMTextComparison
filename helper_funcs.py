@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 from pathlib import Path
 
+from pydantic.types import SecretStr
 
 def read_txt_file_to_string(filepath: str):
     path = Path(filepath)
@@ -12,7 +13,7 @@ def read_txt_file_to_string(filepath: str):
     return doc
 
 
-def get_api_key_url(client: str = "OPENAI"):
+def get_api_key_url(client: str = "OPENAI", return_as_secret_strs: bool = True):
     # Only allow supported clients
     assert client in ["OPENAI", "MISTRAL", "GEMINI"], f"Unsupported client: {client}"
 
@@ -27,6 +28,10 @@ def get_api_key_url(client: str = "OPENAI"):
     else:
         api_key = os.getenv("GEMINI_API_KEY")
         api_url = "https://generativelanguage.googleapis.com/v1beta"
+
+    if return_as_secret_strs:
+        api_key = SecretStr(str(api_key))
+        api_url = SecretStr(str(api_key))
 
     return api_key, api_url
 
