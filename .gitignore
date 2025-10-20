@@ -1,2 +1,8 @@
 venv/*
 .env
+_pycache__/*
+*\__pycache__\*
+*.pyc
+/choma_langchain_db/*
+*.sqlite3
+documents/*
