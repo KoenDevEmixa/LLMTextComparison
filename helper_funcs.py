@@ -1,7 +1,8 @@
 from dotenv import load_dotenv
 import os
 from pathlib import Path
-
+import json
+import pandas as pd
 from pydantic.types import SecretStr
 
 def read_txt_file_to_string(filepath: str):
@@ -12,6 +13,27 @@ def read_txt_file_to_string(filepath: str):
         doc = f.read()
     return doc
 
+def json_to_table(
+        output: str, 
+        print_as_md: bool = True, 
+        save_as_csv: bool = False, 
+        filename: str = "rubric_result.csv"):
+    try:
+        results = json.loads(output)
+    except json.JSONDecodeError:
+        results = json.loads(output[output.find('['):output.rfind(']')+1])
+
+    df = pd.DataFrame(results)
+
+    if print_as_md:
+        print(f"\n📊 {filename}:\n")
+        print(df.to_markdown(index=False))
+
+    if save_as_csv:
+        df.to_csv(filename, index=False)
+        print(f"💾 Tabel opgeslagen als: {filename}")
+
+    return df
 
 def get_api_key_url(client: str = "OPENAI", return_as_secret_strs: bool = True):
     # Only allow supported clients
